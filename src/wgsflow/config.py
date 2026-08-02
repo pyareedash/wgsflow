@@ -44,7 +44,7 @@ class EmailConfig(StrictModel):
     starttls: bool = True
 
     @model_validator(mode="after")
-    def recipient_required(self) -> "EmailConfig":
+    def recipient_required(self) -> EmailConfig:
         if self.enabled and (not self.recipient or "@" not in self.recipient):
             raise ValueError("A valid notifications.email.recipient is required")
         return self
@@ -73,7 +73,7 @@ class Sample(StrictModel):
     read2: Path
 
     @model_validator(mode="after")
-    def mates_are_distinct(self) -> "Sample":
+    def mates_are_distinct(self) -> Sample:
         if self.read1 == self.read2:
             raise ValueError(f"read1 and read2 are identical for {self.sample}")
         return self

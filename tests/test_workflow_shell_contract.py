@@ -1,7 +1,6 @@
 import re
 from pathlib import Path
 
-
 ALLOWED_SHELL_ROOTS = {
     "input",
     "output",

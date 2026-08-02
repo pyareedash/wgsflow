@@ -148,7 +148,7 @@ def status(
         mapped = sample.get("mapping_rate")
         table.add_row(
             str(sample.get("sample")),
-            f"{depth:.2f}×" if isinstance(depth, (int, float)) else "NA",
+            f"{depth:.2f}x" if isinstance(depth, (int, float)) else "NA",
             f"{mapped:.2f}%" if isinstance(mapped, (int, float)) else "NA",
             str(sample.get("small_variants", 0)),
             str(sample.get("structural_variants", 0)),
