@@ -1,0 +1,60 @@
+import csv
+import re
+from pathlib import Path
+
+from snakemake.utils import min_version
+
+min_version("9.20")
+
+ROOT = Path(workflow.basedir).parent.resolve()
+OUT = config.get("output_dir", "results")
+RUN_KEY = Path(OUT).name or "wgsflow"
+LOG_ROOT = f"logs/{RUN_KEY}"
+REFERENCE_SOURCE = config["reference"]
+SAMPLE_SHEET = ROOT / config["samples"]
+
+with SAMPLE_SHEET.open(encoding="utf-8", newline="") as handle:
+    SAMPLE_ROWS = list(csv.DictReader(handle, delimiter="\t"))
+
+if not SAMPLE_ROWS:
+    raise ValueError(f"No samples found in {SAMPLE_SHEET}")
+
+SAMPLES = [row["sample"] for row in SAMPLE_ROWS]
+READ1 = {row["sample"]: row["read1"] for row in SAMPLE_ROWS}
+READ2 = {row["sample"]: row["read2"] for row in SAMPLE_ROWS}
+
+wildcard_constraints:
+    sample="|".join(re.escape(sample) for sample in SAMPLES)
+
+
+def read1(wildcards):
+    return READ1[wildcards.sample]
+
+
+def read2(wildcards):
+    return READ2[wildcards.sample]
+
+
+SMALL_TARGETS = expand(f"{OUT}/variants/{{sample}}.small.vcf.gz", sample=SAMPLES)
+SV_TARGETS = expand(f"{OUT}/variants/{{sample}}.sv.vcf.gz", sample=SAMPLES)
+SV_TABLES = expand(f"{OUT}/tables/{{sample}}.sv.tsv", sample=SAMPLES)
+
+
+rule all:
+    input:
+        expand(f"{OUT}/alignment/{{sample}}.markdup.bam", sample=SAMPLES),
+        expand(f"{OUT}/alignment/{{sample}}.markdup.bam.bai", sample=SAMPLES),
+        SMALL_TARGETS,
+        SV_TARGETS,
+        expand(f"{OUT}/tables/{{sample}}.small.tsv", sample=SAMPLES),
+        SV_TABLES,
+        f"{OUT}/qc/multiqc/multiqc_report.html",
+        f"{OUT}/report/summary.json",
+        f"{OUT}/report/summary.tsv",
+        f"{OUT}/report/dashboard.html",
+
+
+include: "rules/qc.smk"
+include: "rules/alignment.smk"
+include: "rules/variants.smk"
+include: "rules/report.smk"

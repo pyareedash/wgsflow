@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          cache: true
+      - run: pixi run install
+      - run: pixi run lint
+      - run: pixi run test
+      - run: pixi run prepare-demo
+      - run: pixi run wgsflow doctor --config config/demo.yaml
+      - run: pixi run wgsflow dry-run --config config/demo.yaml --cores 2
+      - name: Run complete synthetic smoke test
+        run: pixi run wgsflow run --config config/demo.yaml --cores 2 --no-report

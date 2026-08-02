@@ -1,0 +1,29 @@
+project_name: WGSFlow NA12878 chr20 quick-start
+output_dir: results/quickstart
+samples: config/quickstart.samples.tsv
+reference: resources/quickstart/ucsc.hg19.chr20.unittest.fasta
+
+preprocessing:
+  minimum_length: 50
+  detect_adapter_for_pe: true
+
+alignment:
+  platform: ILLUMINA
+
+small_variants:
+  min_mapping_quality: 20
+  min_base_quality: 20
+  min_quality: 20
+
+structural_variants:
+  min_quality: 20
+
+truth:
+  small_vcf: resources/quickstart/test_nist.b37_chr20_100kbp_at_10mb.vcf.gz
+  sv_vcf: null
+
+notifications:
+  email:
+    enabled: false
+    recipient: null
+    starttls: true

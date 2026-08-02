@@ -1,0 +1,29 @@
+project_name: WGSFlow synthetic truth demo
+output_dir: results/demo
+samples: config/demo.samples.tsv
+reference: resources/demo/reference.fa
+
+preprocessing:
+  minimum_length: 50
+  detect_adapter_for_pe: true
+
+alignment:
+  platform: ILLUMINA
+
+small_variants:
+  min_mapping_quality: 20
+  min_base_quality: 20
+  min_quality: 20
+
+structural_variants:
+  min_quality: 20
+
+truth:
+  small_vcf: resources/demo/truth.small.vcf
+  sv_vcf: resources/demo/truth.sv.vcf
+
+notifications:
+  email:
+    enabled: false
+    recipient: null
+    starttls: true

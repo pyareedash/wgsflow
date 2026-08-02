@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wgsflow"
+version = "0.3.1"
+description = "Dependable Snakemake MVP for paired-end short-read WGS"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Pyaree Mohan Dash" }]
+dependencies = [
+  "pydantic>=2.10,<3",
+  "PyYAML>=6,<7",
+  "rich>=14,<16",
+  "typer>=0.16,<1",
+]
+
+[project.scripts]
+wgsflow = "wgsflow.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+addopts = "-q --disable-warnings --maxfail=1"
+testpaths = ["tests"]
